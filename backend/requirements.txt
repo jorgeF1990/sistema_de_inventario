@@ -12,5 +12,5 @@ email-validator==2.1.0
 cors==1.0.1
 pytest==7.4.3
 pytest-cov==4.1.0
-httpx==0.25.1
-Pillow>=10.0.0pydantic-settings==2.1.0
+Pillow>=10.0.0
+pydantic-settings==2.1.0
