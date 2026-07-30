@@ -5,7 +5,7 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime, timedelta
 import logging
-from jose import jwt
+import jwt
 import bcrypt
 import secrets
 import os
