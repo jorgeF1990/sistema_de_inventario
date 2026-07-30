@@ -1,0 +1,16 @@
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+mysql-connector-python==8.0.33
+python-dotenv==1.0.1
+pydantic==2.5.0
+pydantic-settings==2.1.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+python-dateutil==2.8.2
+email-validator==2.1.0
+cors==1.0.1
+pytest==7.4.3
+pytest-cov==4.1.0
+httpx==0.25.1
+Pillow>=10.0.0pydantic-settings==2.1.0

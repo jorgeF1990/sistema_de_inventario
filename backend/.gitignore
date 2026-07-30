@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+.venv
+*.log
+*.pid
+*.seed
+*.pid.lock
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# Backend
+backend/.env
+backend/configuracion.json
+backend/__pycache__/
+backend/api/__pycache__/
+backend/api/routes/__pycache__/
+backend/api/database/__pycache__/
+backend/api/utils/__pycache__/
+backend/api/models/__pycache__/
+
+# Frontend
+frontend/node_modules/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/node_modules/.vite
+frontend/src/__pycache__/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

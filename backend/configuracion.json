@@ -1,0 +1,13 @@
+{
+  "empresa": "Samsung",
+  "direccion": "belgrani",
+  "telefono": "01126440132",
+  "email": "jorgesfb29@gmail.com",
+  "website": "jorgesfb29@gmail.com",
+  "ruc": "test",
+  "iva": 21.0,
+  "stock_minimo_default": 5,
+  "alertas_stock": true,
+  "notificaciones_email": true,
+  "moneda": "ARS"
+}

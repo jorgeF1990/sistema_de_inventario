@@ -1,0 +1,17 @@
+{
+  "name": "stock-db-scripts",
+  "version": "1.0.0",
+  "scripts": {
+    "migrate": "node run_migrations.js",
+    "refresh": "node refresh_views.js"
+  },
+  "dependencies": {
+    "pg": "^8.22.0"
+  },
+  "description": "",
+  "main": "refresh_views.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

@@ -1,0 +1,9 @@
+{
+  "id_proveedor": 1,
+  "observaciones": "Compra de productos para reposición",
+  "usuario": "admin",
+  "detalles": [
+    {"id_producto": 1, "cantidad": 20, "precio_unitario": 150.00},
+    {"id_producto": 3, "cantidad": 50, "precio_unitario": 70.00}
+  ]
+}
