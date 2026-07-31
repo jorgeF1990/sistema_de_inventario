@@ -42,10 +42,14 @@ class Proveedor(BaseModel):
     contacto_nombre: Optional[str] = ""
     contacto_telefono: Optional[str] = ""
 
+# ============================================================
+# CONFIGURACION DE EMPRESA
+# ============================================================
+
 @router.get("/")
 async def get_configuracion(current_user: dict = Depends(get_current_user)):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
         with get_db() as (conn, cursor):
             cursor.execute(
                 "SELECT * FROM empresas WHERE id_empresa = %s AND activo = TRUE",
@@ -74,7 +78,7 @@ async def get_configuracion(current_user: dict = Depends(get_current_user)):
 @router.post("/")
 async def guardar_configuracion(config: ConfiguracionEmpresa, current_user: dict = Depends(get_current_user)):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
         with get_db() as (conn, cursor):
             cursor.execute("""
                 UPDATE empresas 
@@ -92,10 +96,14 @@ async def guardar_configuracion(config: ConfiguracionEmpresa, current_user: dict
         logger.error(f"Error al guardar configuracion: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============================================================
+# CLIENTES
+# ============================================================
+
 @router.get("/clientes")
 async def get_clientes(current_user: dict = Depends(get_current_user)):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
         with get_db() as (conn, cursor):
             cursor.execute("""
                 SELECT id_cliente, nombre, ruc, telefono, email, direccion, tipo, activo
@@ -111,7 +119,7 @@ async def get_clientes(current_user: dict = Depends(get_current_user)):
 @router.post("/clientes")
 async def crear_cliente(cliente: Cliente, current_user: dict = Depends(get_current_user)):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
         with get_db() as (conn, cursor):
             cursor.execute("""
                 INSERT INTO clientes (nombre, ruc, telefono, email, direccion, tipo, id_empresa)
@@ -127,8 +135,19 @@ async def crear_cliente(cliente: Cliente, current_user: dict = Depends(get_curre
 @router.put("/clientes/{id_cliente}")
 async def actualizar_cliente(id_cliente: int, cliente: Cliente, current_user: dict = Depends(get_current_user)):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
         with get_db() as (conn, cursor):
+            # Verificar que el cliente existe
+            cursor.execute(
+                "SELECT id_cliente FROM clientes WHERE id_cliente = %s AND id_empresa = %s",
+                (id_cliente, empresa_id)
+            )
+            if not cursor.fetchone():
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Cliente no encontrado"
+                )
+            
             cursor.execute("""
                 UPDATE clientes 
                 SET nombre = %s, ruc = %s, telefono = %s, email = %s, direccion = %s, tipo = %s
@@ -137,6 +156,8 @@ async def actualizar_cliente(id_cliente: int, cliente: Cliente, current_user: di
                   cliente.email, cliente.direccion, cliente.tipo, id_cliente, empresa_id))
             conn.commit()
             return {"message": "Cliente actualizado correctamente"}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error al actualizar cliente: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -144,22 +165,39 @@ async def actualizar_cliente(id_cliente: int, cliente: Cliente, current_user: di
 @router.delete("/clientes/{id_cliente}")
 async def eliminar_cliente(id_cliente: int, current_user: dict = Depends(get_current_user)):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
         with get_db() as (conn, cursor):
+            # Verificar que el cliente existe
+            cursor.execute(
+                "SELECT id_cliente FROM clientes WHERE id_cliente = %s AND id_empresa = %s",
+                (id_cliente, empresa_id)
+            )
+            if not cursor.fetchone():
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Cliente no encontrado"
+                )
+            
             cursor.execute(
                 "UPDATE clientes SET activo = FALSE WHERE id_cliente = %s AND id_empresa = %s",
                 (id_cliente, empresa_id)
             )
             conn.commit()
             return {"message": "Cliente eliminado correctamente"}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error al eliminar cliente: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============================================================
+# PROVEEDORES
+# ============================================================
+
 @router.get("/proveedores")
 async def get_proveedores_config(current_user: dict = Depends(get_current_user)):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
         with get_db() as (conn, cursor):
             cursor.execute("""
                 SELECT id_proveedor, nombre, ruc, telefono, email, direccion, 
@@ -176,7 +214,7 @@ async def get_proveedores_config(current_user: dict = Depends(get_current_user))
 @router.post("/proveedores")
 async def crear_proveedor_config(proveedor: Proveedor, current_user: dict = Depends(get_current_user)):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
         with get_db() as (conn, cursor):
             cursor.execute("""
                 INSERT INTO proveedores 
@@ -194,8 +232,19 @@ async def crear_proveedor_config(proveedor: Proveedor, current_user: dict = Depe
 @router.put("/proveedores/{id_proveedor}")
 async def actualizar_proveedor_config(id_proveedor: int, proveedor: Proveedor, current_user: dict = Depends(get_current_user)):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
         with get_db() as (conn, cursor):
+            # Verificar que el proveedor existe
+            cursor.execute(
+                "SELECT id_proveedor FROM proveedores WHERE id_proveedor = %s AND id_empresa = %s",
+                (id_proveedor, empresa_id)
+            )
+            if not cursor.fetchone():
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Proveedor no encontrado"
+                )
+            
             cursor.execute("""
                 UPDATE proveedores 
                 SET nombre = %s, ruc = %s, telefono = %s, email = %s, direccion = %s,
@@ -206,6 +255,8 @@ async def actualizar_proveedor_config(id_proveedor: int, proveedor: Proveedor, c
                   proveedor.contacto_nombre, proveedor.contacto_telefono, id_proveedor, empresa_id))
             conn.commit()
             return {"message": "Proveedor actualizado correctamente"}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error al actualizar proveedor: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -213,22 +264,39 @@ async def actualizar_proveedor_config(id_proveedor: int, proveedor: Proveedor, c
 @router.delete("/proveedores/{id_proveedor}")
 async def eliminar_proveedor_config(id_proveedor: int, current_user: dict = Depends(get_current_user)):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
         with get_db() as (conn, cursor):
+            # Verificar que el proveedor existe
+            cursor.execute(
+                "SELECT id_proveedor FROM proveedores WHERE id_proveedor = %s AND id_empresa = %s",
+                (id_proveedor, empresa_id)
+            )
+            if not cursor.fetchone():
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Proveedor no encontrado"
+                )
+            
             cursor.execute(
                 "UPDATE proveedores SET activo = FALSE WHERE id_proveedor = %s AND id_empresa = %s",
                 (id_proveedor, empresa_id)
             )
             conn.commit()
             return {"message": "Proveedor eliminado correctamente"}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error al eliminar proveedor: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============================================================
+# USUARIOS - CORREGIDO
+# ============================================================
+
 @router.get("/usuarios")
 async def get_usuarios(current_user: dict = Depends(get_current_user)):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
         with get_db() as (conn, cursor):
             cursor.execute("""
                 SELECT id_usuario, nombre_usuario, nombre_completo, email, id_rol, activo
@@ -244,16 +312,20 @@ async def get_usuarios(current_user: dict = Depends(get_current_user)):
 @router.post("/usuarios")
 async def crear_usuario(usuario: dict, current_user: dict = Depends(get_current_user)):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
         nombre_usuario = usuario.get('nombre_usuario', '').lower().strip()
         
         with get_db() as (conn, cursor):
+            # Verificar si el usuario ya existe en esta empresa
             cursor.execute(
                 "SELECT id_usuario FROM usuarios WHERE nombre_usuario = %s AND id_empresa = %s",
                 (nombre_usuario, empresa_id)
             )
             if cursor.fetchone():
-                raise HTTPException(status_code=400, detail="El nombre de usuario ya existe")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="El nombre de usuario ya existe en esta empresa"
+                )
             
             import bcrypt
             hashed = bcrypt.hashpw(
@@ -282,11 +354,31 @@ async def crear_usuario(usuario: dict, current_user: dict = Depends(get_current_
         logger.error(f"Error al crear usuario: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============================================================
+# ACTUALIZAR USUARIO - CORREGIDO
+# ============================================================
+
 @router.put("/usuarios/{id_usuario}")
-async def actualizar_usuario(id_usuario: int, usuario: dict, current_user: dict = Depends(get_current_user)):
+async def actualizar_usuario(
+    id_usuario: int,
+    usuario: dict,
+    current_user: dict = Depends(get_current_user)
+):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
+        
         with get_db() as (conn, cursor):
+            # Verificar que el usuario existe y pertenece a la empresa
+            cursor.execute(
+                "SELECT id_usuario FROM usuarios WHERE id_usuario = %s AND id_empresa = %s",
+                (id_usuario, empresa_id)
+            )
+            if not cursor.fetchone():
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Usuario no encontrado en esta empresa"
+                )
+            
             updates = []
             values = []
             for key in ['nombre_completo', 'email', 'id_rol', 'activo']:
@@ -305,21 +397,52 @@ async def actualizar_usuario(id_usuario: int, usuario: dict, current_user: dict 
             """, values)
             conn.commit()
             return {"message": "Usuario actualizado correctamente"}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error al actualizar usuario: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ============================================================
+# ELIMINAR USUARIO - CORREGIDO
+# ============================================================
+
 @router.delete("/usuarios/{id_usuario}")
-async def eliminar_usuario(id_usuario: int, current_user: dict = Depends(get_current_user)):
+async def eliminar_usuario(
+    id_usuario: int,
+    current_user: dict = Depends(get_current_user)
+):
     try:
-        empresa_id = current_user['empresa_id']
+        empresa_id = current_user['id_empresa']
+        
+        # No permitir eliminarse a sí mismo
+        if id_usuario == current_user['id']:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No puedes eliminarte a ti mismo"
+            )
+        
         with get_db() as (conn, cursor):
+            # Verificar que el usuario existe y pertenece a la empresa
+            cursor.execute(
+                "SELECT id_usuario FROM usuarios WHERE id_usuario = %s AND id_empresa = %s",
+                (id_usuario, empresa_id)
+            )
+            if not cursor.fetchone():
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Usuario no encontrado en esta empresa"
+                )
+            
+            # Eliminar usuario
             cursor.execute(
                 "DELETE FROM usuarios WHERE id_usuario = %s AND id_empresa = %s",
                 (id_usuario, empresa_id)
             )
             conn.commit()
             return {"message": "Usuario eliminado correctamente"}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error al eliminar usuario: {e}")
         raise HTTPException(status_code=500, detail=str(e))
