@@ -12,6 +12,8 @@ import {
   CircularProgress,
   Alert,
   LinearProgress,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import {
   Inventory,
@@ -23,8 +25,11 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api/axios';
+import Graficos from './Graficos';
 
 function Dashboard() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { usuario } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -74,6 +79,7 @@ function Dashboard() {
   const resumen = data?.resumen || {};
   const alertas = data?.alertas || [];
   const ventasDiario = data?.ventasDiario || [];
+  const topProductos = data?.topProductos || [];
 
   const totalProductos = resumen.total_productos || 0;
   const sinStock = resumen.sin_stock || 0;
@@ -87,7 +93,7 @@ function Dashboard() {
       title: 'Productos',
       value: totalProductos,
       subtitle: `${sinStock} sin stock, ${stockBajo} bajo`,
-      icon: <Inventory sx={{ fontSize: 32 }} />,
+      icon: <Inventory sx={{ fontSize: isMobile ? 24 : 32 }} />,
       color: '#3498DB',
       bgColor: 'rgba(52, 152, 219, 0.12)',
     },
@@ -95,7 +101,7 @@ function Dashboard() {
       title: 'Ventas Hoy',
       value: formatCurrency(ventasHoyMonto),
       subtitle: `${ventasHoy} transacciones`,
-      icon: <AttachMoney sx={{ fontSize: 32 }} />,
+      icon: <AttachMoney sx={{ fontSize: isMobile ? 24 : 32 }} />,
       color: '#2ECC71',
       bgColor: 'rgba(46, 204, 113, 0.12)',
     },
@@ -103,7 +109,7 @@ function Dashboard() {
       title: 'Stock Critico',
       value: sinStock + stockBajo,
       subtitle: `${sinStock} sin stock`,
-      icon: <Warning sx={{ fontSize: 32 }} />,
+      icon: <Warning sx={{ fontSize: isMobile ? 24 : 32 }} />,
       color: '#E74C3C',
       bgColor: 'rgba(231, 76, 60, 0.12)',
     },
@@ -111,17 +117,17 @@ function Dashboard() {
       title: 'Pedidos Pendientes',
       value: pedidosPendientes,
       subtitle: 'Requieren atencion',
-      icon: <LocalShipping sx={{ fontSize: 32 }} />,
+      icon: <LocalShipping sx={{ fontSize: isMobile ? 24 : 32 }} />,
       color: '#F39C12',
       bgColor: 'rgba(243, 156, 18, 0.12)',
     },
   ];
 
   return (
-    <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+    <Box sx={{ p: isMobile ? 1 : 3 }}>
+      <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} justifyContent="space-between" alignItems={isMobile ? 'flex-start' : 'center'} mb={4} gap={2}>
         <Box>
-          <Typography variant="h4" fontWeight="700">
+          <Typography variant={isMobile ? 'h5' : 'h4'} fontWeight="700">
             Dashboard
           </Typography>
           <Typography variant="body2" color="textSecondary">
@@ -133,6 +139,8 @@ function Dashboard() {
           startIcon={<Refresh />}
           onClick={cargarDatos}
           disabled={loading}
+          size={isMobile ? 'small' : 'medium'}
+          fullWidth={isMobile}
         >
           Actualizar
         </Button>
@@ -144,24 +152,24 @@ function Dashboard() {
         </Alert>
       )}
 
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={isMobile ? 1.5 : 3} sx={{ mb: 4 }}>
         {KPICards.map((kpi, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+          <Grid item xs={6} sm={6} md={3} key={index}>
             <Card>
-              <CardContent>
+              <CardContent sx={{ p: isMobile ? 1.5 : 2 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
                   <Box>
-                    <Typography color="textSecondary" variant="subtitle2" gutterBottom>
+                    <Typography color="textSecondary" variant={isMobile ? 'caption' : 'subtitle2'} gutterBottom>
                       {kpi.title}
                     </Typography>
-                    <Typography variant="h4" fontWeight="700" component="div">
+                    <Typography variant={isMobile ? 'h6' : 'h4'} fontWeight="700" component="div">
                       {kpi.value}
                     </Typography>
                     <Typography variant="caption" color="textSecondary">
                       {kpi.subtitle}
                     </Typography>
                   </Box>
-                  <Avatar sx={{ bgcolor: kpi.bgColor, color: kpi.color }}>
+                  <Avatar sx={{ bgcolor: kpi.bgColor, color: kpi.color, width: isMobile ? 40 : 56, height: isMobile ? 40 : 56 }}>
                     {kpi.icon}
                   </Avatar>
                 </Box>
@@ -171,11 +179,22 @@ function Dashboard() {
         ))}
       </Grid>
 
-      <Grid container spacing={3}>
+      {/* Gráficos */}
+      <Graficos 
+        ventasSemana={ventasDiario} 
+        productosTop={topProductos} 
+        resumenStock={{
+          normal: totalProductos - sinStock - stockBajo,
+          bajo: stockBajo,
+          sin_stock: sinStock
+        }}
+      />
+
+      <Grid container spacing={isMobile ? 1.5 : 3} sx={{ mt: 2 }}>
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
+          <Paper sx={{ p: isMobile ? 2 : 3 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-              <Typography variant="h6" fontWeight="600">
+              <Typography variant={isMobile ? 'subtitle1' : 'h6'} fontWeight="600">
                 Alertas de Stock
               </Typography>
               <Chip 
@@ -187,7 +206,7 @@ function Dashboard() {
             <Box>
               {alertas.length > 0 ? (
                 alertas.slice(0, 5).map((item, index) => (
-                  <Box key={index} sx={{ py: 1, borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box key={index} sx={{ py: 1, borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 0.5 }}>
                     <Box>
                       <Typography variant="body2" component="span">
                         {item.nombre || 'Producto'}
@@ -211,11 +230,11 @@ function Dashboard() {
         </Grid>
 
         <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 3 }}>
+          <Paper sx={{ p: isMobile ? 2 : 3 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
               <Box display="flex" alignItems="center" gap={1}>
                 <Receipt color="success" />
-                <Typography variant="h6" fontWeight="600">
+                <Typography variant={isMobile ? 'subtitle1' : 'h6'} fontWeight="600">
                   Ultimas Ventas
                 </Typography>
               </Box>

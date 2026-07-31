@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   AppBar,
@@ -29,13 +29,11 @@ import {
   Settings,
   AccountCircle,
   Business,
-  ChevronLeft,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const drawerWidth = 240;
-const collapsedWidth = 65;
 
 const menuItems = [
   { text: 'Dashboard', icon: <Dashboard />, path: '/' },
@@ -49,7 +47,6 @@ const menuItems = [
 function Layout({ children }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const [open, setOpen] = useState(!isMobile);
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
@@ -74,13 +71,17 @@ function Layout({ children }) {
     navigate('/login');
   };
 
-  const drawerWidth = isMobile ? 0 : (open ? 240 : 65);
+  // Cerrar drawer al navegar en móvil
+  useEffect(() => {
+    if (isMobile) {
+      setOpen(false);
+    }
+  }, [location.pathname, isMobile]);
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <CssBaseline />
 
-      {/* AppBar */}
       <AppBar
         position="fixed"
         sx={{
@@ -88,17 +89,16 @@ function Layout({ children }) {
           backgroundColor: 'primary.main',
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ minHeight: { xs: 56, sm: 64 } }}>
           <IconButton
             color="inherit"
-            aria-label="toggle drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: isMobile ? 'block' : 'flex' }}
+            sx={{ mr: 2 }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
             Control de Stock
           </Typography>
           
@@ -108,7 +108,7 @@ function Layout({ children }) {
               label={empresa.nombre}
               color="secondary"
               size="small"
-              sx={{ mr: 2 }}
+              sx={{ mr: 2, display: { xs: 'none', sm: 'flex' } }}
             />
           )}
 
@@ -142,7 +142,6 @@ function Layout({ children }) {
         </Toolbar>
       </AppBar>
 
-      {/* Drawer */}
       <Drawer
         variant={isMobile ? 'temporary' : 'permanent'}
         open={isMobile ? open : true}
@@ -153,14 +152,9 @@ function Layout({ children }) {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
-            mt: '64px',
+            mt: { xs: '56px', sm: '64px' },
             borderRight: '1px solid',
             borderColor: 'divider',
-            transition: theme.transitions.create('width', {
-              easing: theme.transitions.easing.sharp,
-              duration: theme.transitions.duration.enteringScreen,
-            }),
-            overflowX: 'hidden',
           },
         }}
       >
@@ -176,9 +170,6 @@ function Layout({ children }) {
                 }}
                 selected={location.pathname === item.path}
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
                   borderRadius: 1,
                   mx: 1,
                   mb: 0.5,
@@ -192,50 +183,26 @@ function Layout({ children }) {
                       color: 'white',
                     },
                   },
-                  '&:hover': {
-                    backgroundColor: 'action.hover',
-                  },
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                    color: location.pathname === item.path ? 'white' : 'inherit',
-                  }}
-                >
+                <ListItemIcon>
                   {item.icon}
                 </ListItemIcon>
-                <ListItemText
-                  primary={item.text}
-                  sx={{
-                    opacity: open ? 1 : 0,
-                    '& .MuiTypography-root': {
-                      fontWeight: location.pathname === item.path ? 600 : 400,
-                    },
-                  }}
-                />
+                <ListItemText primary={item.text} />
               </ListItem>
             ))}
           </List>
         </Box>
       </Drawer>
 
-      {/* Main Content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          mt: '64px',
+          p: { xs: 1, sm: 2, md: 3 },
+          mt: { xs: '56px', sm: '64px' },
           backgroundColor: '#f5f7fa',
           minHeight: '100vh',
-          transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-          }),
-          marginLeft: isMobile ? 0 : 0,
           width: isMobile ? '100%' : `calc(100% - ${drawerWidth}px)`,
         }}
       >
