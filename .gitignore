@@ -46,3 +46,5 @@ Thumbs.db
 frontend/.vercel
 vercel.json
 frontend/vercel.json
+# Local Netlify folder
+.netlify
