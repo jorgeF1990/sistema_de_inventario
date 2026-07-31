@@ -41,12 +41,10 @@ import {
   Edit,
   Delete,
   Security,
-  Storage,
-  Notifications,
-  Palette,
   Business,
   People,
   LocalShipping,
+  Notifications,
 } from '@mui/icons-material';
 import { ConfiguracionAPI } from '../../api/configuracion';
 
@@ -189,7 +187,7 @@ function Configuracion() {
   const handleSaveConfig = async () => {
     setLoading(true);
     try {
-      await ConfiguracionAPI.guardarConfiguracion( config);
+      await ConfiguracionAPI.guardarConfiguracion(config);
       setSuccessMessage('Configuracion guardada correctamente');
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -199,6 +197,10 @@ function Configuracion() {
       setLoading(false);
     }
   };
+
+  // ============================================
+  // CLIENTES
+  // ============================================
 
   const handleOpenClienteDialog = (cliente = null) => {
     if (cliente) {
@@ -233,10 +235,10 @@ function Configuracion() {
 
     try {
       if (clienteEdit) {
-        await api.put(`/configuracion/clientes/${clienteEdit.id_cliente}`, nuevoCliente);
+        await ConfiguracionAPI.actualizarCliente(clienteEdit.id_cliente, nuevoCliente);
         setSuccessMessage('Cliente actualizado correctamente');
       } else {
-        await ConfiguracionAPI.crearCliente( nuevoCliente);
+        await ConfiguracionAPI.crearCliente(nuevoCliente);
         setSuccessMessage('Cliente creado correctamente');
       }
       setDialogClienteOpen(false);
@@ -251,7 +253,7 @@ function Configuracion() {
   const handleDeleteCliente = async (id) => {
     if (window.confirm('¿Esta seguro de eliminar este cliente?')) {
       try {
-        await api.delete(`/configuracion/clientes/${id}`);
+        await ConfiguracionAPI.eliminarCliente(id);
         cargarClientes();
         setSuccessMessage('Cliente eliminado correctamente');
         setSuccess(true);
@@ -261,6 +263,10 @@ function Configuracion() {
       }
     }
   };
+
+  // ============================================
+  // PROVEEDORES
+  // ============================================
 
   const handleOpenProveedorDialog = (proveedor = null) => {
     if (proveedor) {
@@ -297,10 +303,10 @@ function Configuracion() {
 
     try {
       if (proveedorEdit) {
-        await api.put(`/configuracion/proveedores/${proveedorEdit.id_proveedor}`, nuevoProveedor);
+        await ConfiguracionAPI.actualizarProveedor(proveedorEdit.id_proveedor, nuevoProveedor);
         setSuccessMessage('Proveedor actualizado correctamente');
       } else {
-        await ConfiguracionAPI.crearProveedor( nuevoProveedor);
+        await ConfiguracionAPI.crearProveedor(nuevoProveedor);
         setSuccessMessage('Proveedor creado correctamente');
       }
       setDialogProveedorOpen(false);
@@ -315,7 +321,7 @@ function Configuracion() {
   const handleDeleteProveedor = async (id) => {
     if (window.confirm('¿Esta seguro de eliminar este proveedor?')) {
       try {
-        await api.delete(`/configuracion/proveedores/${id}`);
+        await ConfiguracionAPI.eliminarProveedor(id);
         cargarProveedores();
         setSuccessMessage('Proveedor eliminado correctamente');
         setSuccess(true);
@@ -370,7 +376,7 @@ function Configuracion() {
       };
 
       if (usuarioEdit) {
-        await api.put(`/configuracion/usuarios/${usuarioEdit.id_usuario}`, usuarioData);
+        await ConfiguracionAPI.actualizarUsuario(usuarioEdit.id_usuario, usuarioData);
         setSuccessMessage('Usuario actualizado correctamente');
       } else {
         await ConfiguracionAPI.crearUsuario({
@@ -384,20 +390,22 @@ function Configuracion() {
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
-      setError('Error al guardar el usuario');
+      console.error('Error al guardar usuario:', error);
+      setError(error.response?.data?.detail || 'Error al guardar el usuario');
     }
   };
 
   const handleDeleteUsuario = async (id) => {
     if (window.confirm('¿Esta seguro de eliminar este usuario?')) {
       try {
-        await api.delete(`/configuracion/usuarios/${id}`);
+        await ConfiguracionAPI.eliminarUsuario(id);
         cargarUsuarios();
         setSuccessMessage('Usuario eliminado correctamente');
         setSuccess(true);
         setTimeout(() => setSuccess(false), 3000);
       } catch (error) {
-        setError('Error al eliminar el usuario');
+        console.error('Error al eliminar usuario:', error);
+        setError(error.response?.data?.detail || 'Error al eliminar el usuario');
       }
     }
   };
@@ -664,7 +672,7 @@ function Configuracion() {
             </TableContainer>
           </TabPanel>
 
-          {/* Panel Usuarios - CORREGIDO */}
+          {/* Panel Usuarios */}
           <TabPanel value={tabValue} index={3}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={3} flexWrap="wrap" gap={1}>
               <Typography variant="h6" fontWeight="600">Usuarios del Sistema</Typography>
@@ -848,7 +856,7 @@ function Configuracion() {
         </DialogActions>
       </Dialog>
 
-      {/* Dialog Usuario - CORREGIDO con Rol y Estado */}
+      {/* Dialog Usuario */}
       <Dialog open={dialogUsuarioOpen} onClose={() => setDialogUsuarioOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{usuarioEdit ? 'Editar Usuario' : 'Nuevo Usuario'}</DialogTitle>
         <DialogContent>
