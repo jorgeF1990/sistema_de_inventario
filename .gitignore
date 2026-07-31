@@ -1,5 +1,4 @@
-# Crea el archivo .gitignore
-cat > .gitignore << 'EOF'
+
 # Python
 __pycache__/
 *.py[cod]
@@ -41,4 +40,9 @@ Thumbs.db
 # Reportes exportados
 *.csv
 *.xlsx
-EOF
+
+# Vercel
+.vercel
+frontend/.vercel
+vercel.json
+frontend/vercel.json
