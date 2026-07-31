@@ -233,7 +233,7 @@ function Configuracion() {
 
     try {
       if (clienteEdit) {
-        await api.put(`/configuracion/clientes/${clienteEdit.id_cliente}`, nuevoCliente);
+        await ConfiguracionAPI.actualizarCliente(clienteEdit.id_cliente, nuevoCliente);
         setSuccessMessage('Cliente actualizado correctamente');
       } else {
         await ConfiguracionAPI.crearCliente( nuevoCliente);
@@ -251,7 +251,7 @@ function Configuracion() {
   const handleDeleteCliente = async (id) => {
     if (window.confirm('¿Esta seguro de eliminar este cliente?')) {
       try {
-        await api.delete(`/configuracion/clientes/${id}`);
+        await ConfiguracionAPI.eliminarCliente(id);
         cargarClientes();
         setSuccessMessage('Cliente eliminado correctamente');
         setSuccess(true);
@@ -297,7 +297,7 @@ function Configuracion() {
 
     try {
       if (proveedorEdit) {
-        await api.put(`/configuracion/proveedores/${proveedorEdit.id_proveedor}`, nuevoProveedor);
+        await ConfiguracionAPI.actualizarProveedor(proveedorEdit.id_proveedor, nuevoProveedor);
         setSuccessMessage('Proveedor actualizado correctamente');
       } else {
         await ConfiguracionAPI.crearProveedor( nuevoProveedor);
@@ -315,7 +315,7 @@ function Configuracion() {
   const handleDeleteProveedor = async (id) => {
     if (window.confirm('¿Esta seguro de eliminar este proveedor?')) {
       try {
-        await api.delete(`/configuracion/proveedores/${id}`);
+        await ConfiguracionAPI.eliminarProveedor(id);
         cargarProveedores();
         setSuccessMessage('Proveedor eliminado correctamente');
         setSuccess(true);
@@ -370,7 +370,7 @@ function Configuracion() {
       };
 
       if (usuarioEdit) {
-        await api.put(`/configuracion/usuarios/${usuarioEdit.id_usuario}`, usuarioData);
+        await ConfiguracionAPI.actualizarUsuario(usuarioEdit.id_usuario, usuarioData);
         setSuccessMessage('Usuario actualizado correctamente');
       } else {
         await ConfiguracionAPI.crearUsuario({
@@ -391,7 +391,7 @@ function Configuracion() {
   const handleDeleteUsuario = async (id) => {
     if (window.confirm('¿Esta seguro de eliminar este usuario?')) {
       try {
-        await api.delete(`/configuracion/usuarios/${id}`);
+        await ConfiguracionAPI.eliminarUsuario(id);
         cargarUsuarios();
         setSuccessMessage('Usuario eliminado correctamente');
         setSuccess(true);

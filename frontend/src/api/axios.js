@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+// Avoid "Mixed Content" browser errors: if the app is served over HTTPS,
+// never let the API base URL silently downgrade the request to HTTP.
+if (typeof window !== 'undefined' && window.location.protocol === 'https:' && API_URL.startsWith('http://')) {
+  API_URL = API_URL.replace('http://', 'https://');
+}
 
 const api = axios.create({
   baseURL: API_URL,

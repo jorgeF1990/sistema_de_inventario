@@ -29,16 +29,15 @@ backend/api/utils/__pycache__/
 backend/api/models/__pycache__/
 
 # Frontend
-frontend/node_modules/
-frontend/.env.local
-frontend/.env.development.local
-frontend/.env.test.local
-frontend/.env.production.local
-frontend/dist/
-frontend/build/
-frontend/.vite/
-frontend/node_modules/.vite
-frontend/src/__pycache__/
+node_modules/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+dist/
+build/
+.vite/
+src/__pycache__/
 
 # IDE
 .vscode/
